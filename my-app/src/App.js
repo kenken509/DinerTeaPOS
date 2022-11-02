@@ -16,6 +16,7 @@ function App() {
     <div className="App">
       <BrowserRouter>
         <Routes>
+          <Route path="/" element={<Login />} />
           <Route
             path="/home"
             element={
@@ -74,7 +75,6 @@ function App() {
           />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/" element={<Login />} />
         </Routes>
       </BrowserRouter>
     </div>
