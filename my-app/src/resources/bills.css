@@ -1,0 +1,14 @@
+#bill-header-p {
+  margin-bottom: 0px;
+}
+
+#bill-header-container {
+  border-bottom: 1px dotted rgb(65, 64, 64);
+}
+#bill-body-customer-info {
+  margin-bottom: 0px;
+}
+.ant-table-row:hover td {
+  background-color: #f8cf84 !important;
+  color: rgb(24, 24, 24) !important;
+}

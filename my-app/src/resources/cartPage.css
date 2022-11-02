@@ -1,0 +1,13 @@
+.anticon-delete {
+  cursor: pointer;
+}
+.anticon-delete:hover {
+  color: #d32e0d;
+}
+.subtotal {
+  text-shadow: 2px 2px 4px #989898;
+  padding-right: 50px;
+}
+.subtotal h3 {
+  color: black;
+}

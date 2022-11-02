@@ -1,0 +1,98 @@
+#components-layout-demo-custom-trigger .trigger {
+  padding: 0 24px;
+  font-size: 18px;
+  line-height: 64px;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+img {
+  border-top-left-radius: 0;
+}
+#components-layout-demo-custom-trigger .trigger:hover {
+  color: #1890ff;
+}
+
+#components-layout-demo-custom-trigger .logo {
+  height: 32px;
+  margin: 16px;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.site-layout .site-layout-background {
+  background: #fff;
+  box-shadow: 0 0 3px #ccc;
+}
+
+.ant-layout-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.ant-layout-has-sider {
+  padding-top: 10px !important;
+}
+
+.ant-layout-sider {
+  border-radius: 10px !important;
+  background-color: #496c30;
+}
+.ant-layout-sider-children {
+  padding-top: 15px;
+  padding-right: 20px;
+  height: 95vh !important;
+}
+
+.anticon svg {
+  width: 20px;
+  height: 20px !important;
+}
+.logo h4 {
+  color: whitesmoke;
+  font-size: 22px;
+  font-weight: bold;
+  text-align: center;
+  padding-bottom: 100px;
+}
+.ant-menu-item {
+  border-bottom-right-radius: 10px;
+  border-top-right-radius: 10px !important;
+}
+.ant-menu-item-selected {
+  background-color: #017b8b !important;
+}
+.ant-menu {
+  background-color: #496c30 !important;
+}
+
+.cart-count {
+  cursor: pointer;
+  margin-right: 30px;
+}
+.ant-layout-content {
+  height: 80vh !important;
+  overflow-y: scroll;
+}
+#company-logo-container {
+  display: flex;
+  align-items: end;
+  justify-content: flex-end;
+  margin-bottom: 30px;
+}
+#header-title-container {
+  display: block;
+  margin: auto;
+}
+#header-title {
+  color: rgb(58, 58, 58);
+  text-shadow: 3px 3px 5px #989898;
+}
+#dinner-tea-title {
+  font-size: 24px;
+  padding: 5px;
+  margin-bottom: 0px;
+  color: #dfeef0;
+}
+#company-logo {
+  width: 30px;
+  padding: 5px;
+}

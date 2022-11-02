@@ -1,0 +1,27 @@
+.authentication {
+  display: flex;
+  align-items: center;
+  height: 100vh;
+  background-image: url('../uploads/bg.png');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.authentication .ant-row {
+  width: 100%;
+  justify-content: center !important;
+}
+
+.ant-form {
+  padding: 20px;
+  background-color: whitesmoke;
+  border: 2px solid black;
+  border-radius: 10px;
+}
+.ant-input {
+  border-radius: 8px !important;
+}
+.login-link {
+  color: rgb(86, 85, 85);
+}

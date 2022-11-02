@@ -1,0 +1,18 @@
+.ant-spin-text {
+  font-size: 24px !important;
+  margin-top: 20px;
+}
+.ant-spin {
+  width: 200px;
+  height: 200px !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+.loadingContainer {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}

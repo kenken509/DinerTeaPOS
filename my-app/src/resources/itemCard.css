@@ -1,0 +1,33 @@
+.itemCard {
+  box-shadow: 5px 5px 10px 5px #888888;
+  /* box-shadow: 0 0 3px #ccc; */
+  margin: 20px;
+  border-radius: 5px;
+  padding: 20px;
+}
+
+.itemCard h4 {
+  color: #e9a71c;
+}
+
+.itemCard .price {
+  color: rgb(128, 126, 126);
+}
+
+.itemImg {
+  height: 200px;
+  width: 200px;
+}
+.itemChild {
+  text-align: center;
+}
+
+.ant-btn {
+  background-color: #0195a8 !important;
+  border-radius: 5px;
+}
+
+.itemCard:hover {
+  transform: scale(1.08);
+  transition: all 0.8s;
+}
