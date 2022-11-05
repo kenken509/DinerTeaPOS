@@ -1,0 +1,20 @@
+.add-user-icon:hover {
+  color: green;
+  transform: scale(1.5);
+  transition: all 0.2s !important;
+}
+.edit-user-icon:hover {
+  color: #1876f2 !important;
+  transform: scale(1.5);
+  transition: all 0.2s !important;
+}
+
+.delete-user-icon:hover {
+  color: #e50015 !important;
+  transform: scale(1.5);
+  transition: all 0.2s !important;
+}
+
+.employee-modal {
+  width: 800px !important;
+}

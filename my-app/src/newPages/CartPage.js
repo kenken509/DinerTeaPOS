@@ -10,7 +10,7 @@ import {
 } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import DefaultLayout from '../components/DefaultLayout';
+
 import {
   DeleteOutlined,
   MinusCircleOutlined,
@@ -19,6 +19,7 @@ import {
 import '../resources/cartPage.css';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import CashierLayout from '../components/CashierLayout';
 
 const CartPage = () => {
   const navigate = useNavigate();
@@ -123,68 +124,64 @@ const CartPage = () => {
   };
   return (
     <div>
-      <DefaultLayout>
-        <h3>Cart Items</h3>
-        <Table columns={columns} dataSource={cartItems} rowKey="_id" />
-        <hr />
-        <div className="d-flex justify-content-end flex-column align-items-end">
-          <div className="subtotal">
-            {cartItems.length !== 0 && (
-              <h3>SUBTOTAL: ₱ {subTotal.toFixed(2)}</h3>
-            )}
+      <h3>Cart Items</h3>
+      <Table columns={columns} dataSource={cartItems} rowKey="_id" />
+      <hr />
+      <div className="d-flex justify-content-end flex-column align-items-end">
+        <div className="subtotal">
+          {cartItems.length !== 0 && <h3>SUBTOTAL: ₱ {subTotal.toFixed(2)}</h3>}
+        </div>
+        {cartItems.length !== 0 && (
+          <Button
+            type="primary"
+            onClick={() => {
+              setBillChargeModal(true);
+            }}
+          >
+            Charge Bill
+          </Button>
+        )}
+      </div>
+      <Modal
+        title="Charge Bill"
+        open={billChargeModal}
+        onCancel={() => setBillChargeModal(false)}
+        footer={null}
+      >
+        <Form layout="vertical" onFinish={onFinish}>
+          <Form.Item label="Customer name" name="customerName">
+            <Input placeholder="Customer name"></Input>
+          </Form.Item>
+
+          <Form.Item label="Customer Phone Number" name="customerPhoneNumber">
+            <Input placeholder="Phone number"></Input>
+          </Form.Item>
+
+          <Form.Item label="Payment Mode" name="paymentMode">
+            <Select placeholder="Payment mode">
+              <Select.Option value="cash">Cash</Select.Option>
+              <Select.Option value="card">Card</Select.Option>
+            </Select>
+          </Form.Item>
+
+          <div>
+            <h5>Subtotal: ₱ {subTotal.toFixed(2)}</h5>
+            <h5>Vat 12%: ₱ {(subTotal * 0.12).toFixed(2)} </h5>
+            <hr />
+            <h5>Total: ₱ {grandTotal.toFixed(2)}</h5>
           </div>
-          {cartItems.length !== 0 && (
+
+          <div className="d-flex justify-content-end">
             <Button
               type="primary"
-              onClick={() => {
-                setBillChargeModal(true);
-              }}
+              htmlType="submit"
+              onClick={() => setBillChargeModal(false)}
             >
-              Charge Bill
+              Generate Bill
             </Button>
-          )}
-        </div>
-        <Modal
-          title="Charge Bill"
-          open={billChargeModal}
-          onCancel={() => setBillChargeModal(false)}
-          footer={null}
-        >
-          <Form layout="vertical" onFinish={onFinish}>
-            <Form.Item label="Customer name" name="customerName">
-              <Input placeholder="Customer name"></Input>
-            </Form.Item>
-
-            <Form.Item label="Customer Phone Number" name="customerPhoneNumber">
-              <Input placeholder="Phone number"></Input>
-            </Form.Item>
-
-            <Form.Item label="Payment Mode" name="paymentMode">
-              <Select placeholder="Payment mode">
-                <Select.Option value="cash">Cash</Select.Option>
-                <Select.Option value="card">Card</Select.Option>
-              </Select>
-            </Form.Item>
-
-            <div>
-              <h5>Subtotal: ₱ {subTotal.toFixed(2)}</h5>
-              <h5>Vat 12%: ₱ {(subTotal * 0.12).toFixed(2)} </h5>
-              <hr />
-              <h5>Total: ₱ {grandTotal.toFixed(2)}</h5>
-            </div>
-
-            <div className="d-flex justify-content-end">
-              <Button
-                type="primary"
-                htmlType="submit"
-                onClick={() => setBillChargeModal(false)}
-              >
-                Generate Bill
-              </Button>
-            </div>
-          </Form>
-        </Modal>
-      </DefaultLayout>
+          </div>
+        </Form>
+      </Modal>
     </div>
   );
 };

@@ -1,13 +1,29 @@
 //import { Button } from 'antd/lib/radio';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import '../resources/itemCard.css';
 import { Button } from 'antd';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 function ItemCard({ item }) {
   const dispatch = useDispatch();
-  function addToCart() {
-    dispatch({ type: 'addToCart', payload: { ...item, quantity: 1 } });
+  const { cartItems } = useSelector((state) => state.rootReducer);
+
+  const addCartItem = (cartItems, productToadd) => {
+    const productExist = cartItems.find((item) => {
+      return item._id === productToadd._id;
+    });
+    if (productExist) {
+      return dispatch({
+        type: 'increaseQuantityExistingItem',
+        payload: productToadd,
+      });
+    } else {
+      return dispatch({ type: 'addToCart', payload: productToadd });
+    }
+  };
+
+  function addItemToCart(productToadd) {
+    addCartItem(cartItems, productToadd);
   }
 
   return (
@@ -24,7 +40,7 @@ function ItemCard({ item }) {
         <h4 className="price">Price: P {item.price.toFixed(2)}</h4>
       </div>
       <div className="d-flex justify-content-end">
-        <Button type="primary" onClick={() => addToCart()}>
+        <Button type="primary" onClick={() => addItemToCart(item)}>
           Add to cart
         </Button>
       </div>

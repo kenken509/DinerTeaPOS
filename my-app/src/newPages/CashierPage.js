@@ -5,8 +5,10 @@ import { Col, Divider, Row } from 'antd';
 import ItemCard from '../components/ItemCard';
 import { useDispatch, useSelector } from 'react-redux';
 import '../resources/HomePage.css';
+import AdminLayout from '../components/AdminLayout';
+import CashierLayout from '../components/CashierLayout';
 
-function HomePage() {
+function CashierPage() {
   //const { cartItems } = useSelector((state) => state.rootReducer);
   const [itemsData, setItemsData] = useState([]);
   const [categorySelector, setCategorySelector] = useState('fruits');
@@ -52,44 +54,42 @@ function HomePage() {
 
   return (
     <div>
-      <DefaultLayout>
-        <div className="d-flex">
-          {categories.map((category) => {
+      <div className="d-flex">
+        {categories.map((category) => {
+          return (
+            <div
+              className={`d-flex category-container ${
+                categorySelector === category.name && 'selected-category'
+              }`}
+              onClick={() => {
+                setCategorySelector(category.name);
+              }}
+              key={category.id}
+            >
+              <h4>{category.name}</h4>
+              <img
+                src={category.imageURL}
+                height="50px"
+                width="70px"
+                id="categoryImg"
+              />
+            </div>
+          );
+        })}
+      </div>
+      <hr />
+      <Row gutter={20}>
+        {itemsData
+          .filter((itm) => itm.category === categorySelector)
+          .map((item, index) => {
             return (
-              <div
-                className={`d-flex category-container ${
-                  categorySelector === category.name && 'selected-category'
-                }`}
-                onClick={() => {
-                  setCategorySelector(category.name);
-                }}
-                key={category.id}
-              >
-                <h4>{category.name}</h4>
-                <img
-                  src={category.imageURL}
-                  height="50px"
-                  width="70px"
-                  id="categoryImg"
-                />
-              </div>
+              <Col span={6} xs={24} lg={6} md={12} sm={24} key={item._id}>
+                <ItemCard item={item} />
+              </Col>
             );
           })}
-        </div>
-        <hr />
-        <Row gutter={20}>
-          {itemsData
-            .filter((itm) => itm.category === categorySelector)
-            .map((item, index) => {
-              return (
-                <Col span={6} xs={24} lg={6} md={12} sm={24} key={item._id}>
-                  <ItemCard item={item} />
-                </Col>
-              );
-            })}
-        </Row>
-      </DefaultLayout>
+      </Row>
     </div>
   );
 }
-export default HomePage;
+export default CashierPage;

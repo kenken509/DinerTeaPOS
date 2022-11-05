@@ -9,28 +9,29 @@ import {
   ShoppingCartOutlined,
   BarChartOutlined,
   UsergroupAddOutlined,
+  BarcodeOutlined,
 } from '@ant-design/icons';
 import '../resources/layout.css';
-import { Image, Layout, Menu, message } from 'antd';
+import { Image, Layout, Menu } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import Loading from '../resources/antd.loader/Loading';
 
 const { Header, Sider, Content } = Layout;
-const DefaultLayout = (props) => {
+
+const CashierLayout = (props) => {
   const [collapsed, setCollapsed] = useState(true);
   const { cartItems, loading } = useSelector((state) => state.rootReducer);
   const navigate = useNavigate();
   const image = require('../uploads/crown.png');
 
-  function navToCart() {
-    navigate('/cart');
-  }
   useEffect(() => {
     localStorage.setItem('cartItems', JSON.stringify(cartItems));
   }, [cartItems]);
-
+  function navToCart() {
+    navigate('/cart');
+  }
   return (
     <Layout>
       <Sider trigger={null} collapsible collapsed={collapsed}>
@@ -57,41 +58,20 @@ const DefaultLayout = (props) => {
           defaultSelectedKeys={window.location.pathname}
           items={[
             {
-              key: '/home',
-              icon: <HomeOutlined />,
-              label: 'Home',
+              key: '/employees-page/cashier',
+              icon: <BarcodeOutlined />,
+              label: 'Cashier',
             },
             {
-              key: '/cart',
+              key: '/employees-page/cart',
               icon: <ShoppingCartOutlined />,
               label: 'Cart',
             },
             {
-              key: '/bills',
+              key: '/employees-page/cashier-bills',
               icon: <CopyOutlined />,
               label: 'Bills',
             },
-            {
-              key: '/items',
-              icon: <UnorderedListOutlined />,
-              label: 'Items',
-            },
-            {
-              key: '/customers',
-              icon: <UserOutlined />,
-              label: 'Customers',
-            },
-            {
-              key: '/employees',
-              icon: <UsergroupAddOutlined />,
-              label: 'Employees',
-            },
-            {
-              key: '/sales-chart',
-              icon: <BarChartOutlined />,
-              label: 'Sales Chart',
-            },
-
             {
               key: '/logout',
               icon: (
@@ -145,11 +125,11 @@ const DefaultLayout = (props) => {
           }}
         >
           {loading && Loading()}
-
+          <Outlet />
           {props.children}
         </Content>
       </Layout>
     </Layout>
   );
 };
-export default DefaultLayout;
+export default CashierLayout;
