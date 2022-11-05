@@ -1,18 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import DefaultLayout from '../components/DefaultLayout';
 import axios from 'axios';
-import { Col, Divider, Row } from 'antd';
+import { Card, Col, Divider, Row, Table } from 'antd';
 import ItemCard from '../components/ItemCard';
 import { useDispatch, useSelector } from 'react-redux';
 import '../resources/HomePage.css';
-import AdminLayout from '../components/AdminLayout';
-import CashierLayout from '../components/CashierLayout';
 
 function CashierPage() {
   //const { cartItems } = useSelector((state) => state.rootReducer);
   const [itemsData, setItemsData] = useState([]);
   const [categorySelector, setCategorySelector] = useState('fruits');
-
+  const [isCardItemOpen, setIsCardItemOpen] = useState(false);
+  const { cartViewItems } = useSelector((state) => state.rootReducer);
   const categories = [
     {
       id: 131,

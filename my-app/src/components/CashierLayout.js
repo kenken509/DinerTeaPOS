@@ -12,10 +12,19 @@ import {
   BarcodeOutlined,
 } from '@ant-design/icons';
 import '../resources/layout.css';
-import { Image, Layout, Menu } from 'antd';
+import {
+  Button,
+  Card,
+  Dropdown,
+  Image,
+  Layout,
+  Menu,
+  Table,
+  Tooltip,
+} from 'antd';
 import React, { useEffect, useState } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Loading from '../resources/antd.loader/Loading';
 
 const { Header, Sider, Content } = Layout;
@@ -23,15 +32,46 @@ const { Header, Sider, Content } = Layout;
 const CashierLayout = (props) => {
   const [collapsed, setCollapsed] = useState(true);
   const { cartItems, loading } = useSelector((state) => state.rootReducer);
+  const [cartViewItems, setCartViewItems] = useState(false);
+  const [subTotal, setSubTotal] = useState(0);
   const navigate = useNavigate();
   const image = require('../uploads/crown.png');
+  const dispatch = useDispatch();
 
   useEffect(() => {
     localStorage.setItem('cartItems', JSON.stringify(cartItems));
   }, [cartItems]);
-  function navToCart() {
-    navigate('/cart');
+  function toggleCartViewItem() {
+    dispatch({ type: 'cartViewItemsToggle' });
   }
+
+  function toggleCartViewItem() {
+    setCartViewItems((preVal) => !preVal);
+  }
+  console.log(cartItems.map((item) => console.log(item)));
+  const column = [
+    {
+      title: 'Items',
+      dataIndex: 'image',
+      render: (image, record) => (
+        <img src={record.image} alt="error" width="40px" height="40px" />
+      ),
+    },
+    { title: 'Qty', dataIndex: 'quantity' },
+    {
+      title: 'Amt',
+      dataIndex: 'price',
+      render: (price, record) => <p>{price.toFixed(2)}</p>,
+    },
+  ];
+  useEffect(() => {
+    let temp = 0;
+    cartItems.forEach((item) => {
+      temp = temp + item.price * item.quantity;
+
+      setSubTotal(temp);
+    });
+  }, [cartItems]);
   return (
     <Layout>
       <Sider trigger={null} collapsible collapsed={collapsed}>
@@ -107,12 +147,13 @@ const CashierLayout = (props) => {
               Dinner Tea <b>POS</b>
             </h1>
           </div>
+
           <div
             className="cart-count d-flex align-items-center"
-            onClick={navToCart}
+            onClick={toggleCartViewItem}
           >
             <p className="mt-3">{cartItems.length}</p>
-            <ShoppingCartOutlined />
+            <ShoppingCartOutlined />;
           </div>
         </Header>
         <Content
@@ -127,6 +168,30 @@ const CashierLayout = (props) => {
           {loading && Loading()}
           <Outlet />
           {props.children}
+          {cartViewItems && (
+            <Card
+              size="small"
+              style={{
+                width: '300px',
+                position: 'absolute',
+                top: '80px',
+                right: '50px',
+                backgroundColor: 'whitesmoke',
+              }}
+            >
+              <Table
+                columns={column}
+                dataSource={cartItems}
+                pagination={false}
+              ></Table>
+              <h3>Total: ₱ {subTotal.toFixed(2)}</h3>
+              <div className="d-flex justify-content-end">
+                <Button type="primary" htmlType="submit">
+                  Check out
+                </Button>
+              </div>
+            </Card>
+          )}
         </Content>
       </Layout>
     </Layout>

@@ -4,6 +4,7 @@ import { useState } from 'react';
 const initialState = {
   loading: false,
   cartItems: [],
+  // cartViewItems: false,
 };
 
 const rootReducer = (state = initialState, action) => {
@@ -66,6 +67,12 @@ const rootReducer = (state = initialState, action) => {
         loading: false,
       };
     }
+    // case 'cartViewItemsToggle': {
+    //   return {
+    //     ...state,
+    //     cartViewItems: !state.cartViewItems,
+    //   };
+    // }
     default:
       return state;
   }
