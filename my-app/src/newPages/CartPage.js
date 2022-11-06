@@ -23,21 +23,18 @@ import CashierLayout from '../components/CashierLayout';
 
 const CartPage = () => {
   const navigate = useNavigate();
-  const { cartItems } = useSelector((state) => state.rootReducer);
+  const { cartItems, cartViewItems } = useSelector(
+    (state) => state.rootReducer
+  );
   const [subTotal, setSubTotal] = useState(0);
   const [billChargeModal, setBillChargeModal] = useState(false);
   const dispatch = useDispatch();
   var grandTotal = subTotal + subTotal * 0.12;
-  //console.log(cartItems.length);
-  //console.log(cartItems);
-  useEffect(() => {
-    let temp = 0;
-    cartItems.forEach((item) => {
-      temp = temp + item.price * item.quantity;
 
-      setSubTotal(temp);
-    });
-  }, [cartItems]);
+  useEffect(() => {
+    dispatch({ type: 'cartViewItemsClosed' });
+  }, []);
+
   function increaseQuantity(record) {
     dispatch({
       type: 'increaseQuantity',
@@ -122,6 +119,14 @@ const CartPage = () => {
         message.success('Something went wrong.');
       });
   };
+  useEffect(() => {
+    let temp = 0;
+    cartItems.forEach((item) => {
+      temp = temp + item.price * item.quantity;
+
+      setSubTotal(temp);
+    });
+  }, [cartItems]);
   return (
     <div>
       <h3>Cart Items</h3>
@@ -138,10 +143,12 @@ const CartPage = () => {
               setBillChargeModal(true);
             }}
           >
-            Charge Bill
+            Check out
           </Button>
         )}
       </div>
+
+      {/* <<<<CHARGE BILL MODAL STARTS HERE>>>>> */}
       <Modal
         title="Charge Bill"
         open={billChargeModal}
@@ -157,12 +164,15 @@ const CartPage = () => {
             <Input placeholder="Phone number"></Input>
           </Form.Item>
 
-          <Form.Item label="Payment Mode" name="paymentMode">
+          <Form.Item label="Amount Tendered" name="amountTendered">
+            <Input placeholder="Enter Amount" type="number"></Input>
+          </Form.Item>
+          {/* <Form.Item label="Payment Mode" name="paymentMode">
             <Select placeholder="Payment mode">
               <Select.Option value="cash">Cash</Select.Option>
               <Select.Option value="card">Card</Select.Option>
             </Select>
-          </Form.Item>
+          </Form.Item> */}
 
           <div>
             <h5>Subtotal: ₱ {subTotal.toFixed(2)}</h5>
@@ -182,6 +192,7 @@ const CartPage = () => {
           </div>
         </Form>
       </Modal>
+      {/* <<<<CHARGE BILL MODAL ENDS HERE>>>>> */}
     </div>
   );
 };

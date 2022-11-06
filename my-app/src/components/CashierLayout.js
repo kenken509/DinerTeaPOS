@@ -19,6 +19,7 @@ import {
   Image,
   Layout,
   Menu,
+  message,
   Table,
   Tooltip,
 } from 'antd';
@@ -31,8 +32,10 @@ const { Header, Sider, Content } = Layout;
 
 const CashierLayout = (props) => {
   const [collapsed, setCollapsed] = useState(true);
-  const { cartItems, loading } = useSelector((state) => state.rootReducer);
-  const [cartViewItems, setCartViewItems] = useState(false);
+  const { cartItems, loading, cartViewItems } = useSelector(
+    (state) => state.rootReducer
+  );
+
   const [subTotal, setSubTotal] = useState(0);
   const navigate = useNavigate();
   const image = require('../uploads/crown.png');
@@ -41,14 +44,11 @@ const CashierLayout = (props) => {
   useEffect(() => {
     localStorage.setItem('cartItems', JSON.stringify(cartItems));
   }, [cartItems]);
+
   function toggleCartViewItem() {
     dispatch({ type: 'cartViewItemsToggle' });
   }
 
-  function toggleCartViewItem() {
-    setCartViewItems((preVal) => !preVal);
-  }
-  console.log(cartItems.map((item) => console.log(item)));
   const column = [
     {
       title: 'Items',
@@ -72,6 +72,7 @@ const CashierLayout = (props) => {
       setSubTotal(temp);
     });
   }, [cartItems]);
+
   return (
     <Layout>
       <Sider trigger={null} collapsible collapsed={collapsed}>
@@ -183,6 +184,7 @@ const CashierLayout = (props) => {
                 columns={column}
                 dataSource={cartItems}
                 pagination={false}
+                rowKey="_id"
               ></Table>
               <h3>Total: ₱ {subTotal.toFixed(2)}</h3>
               <div className="d-flex justify-content-end">

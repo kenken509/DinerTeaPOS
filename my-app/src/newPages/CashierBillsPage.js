@@ -1,7 +1,7 @@
 import react, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import { Modal, Table } from 'antd';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { EyeOutlined } from '@ant-design/icons';
 import '../resources/bills.css';
 import ReactToPrint, { useReactToPrint } from 'react-to-print';
@@ -9,11 +9,15 @@ import AdminLayout from '../components/AdminLayout';
 
 const CashierBillsPage = () => {
   const componentRef = useRef();
-
+  const { cartViewItems } = useSelector((state) => state.rootReducer);
   const [billsData, setBillsData] = useState([]);
   const [billModalOpen, setBillModalOpen] = useState(false);
   const [selectedBills, setSelectedBills] = useState(null);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch({ type: 'cartViewItemsClosed' });
+  }, []);
   //hideLoading
   function getAllBills() {
     dispatch({ type: 'showLoading' });
