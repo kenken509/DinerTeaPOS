@@ -2,11 +2,11 @@ const mongoose = require('mongoose');
 
 const billsSchema = mongoose.Schema(
   {
-    customerName: { type: String, required: true },
-    customerPhoneNumber: { type: Number, required: true },
-    paymentMode: { type: String, required: true },
+    customerName: { type: String, required: false },
+    customerPhoneNumber: { type: Number, required: false },
     cartItems: { type: Array, required: true },
-    subTotal: { type: Number, required: true },
+    subTotalBeforeTax: { type: Number, required: true },
+    subTotalAfterTax: { type: Number, required: true },
     tax: { type: Number, required: true },
     totalAmount: { type: Number, required: true },
     userId: { type: String, required: true },

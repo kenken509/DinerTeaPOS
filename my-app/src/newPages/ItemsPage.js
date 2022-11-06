@@ -4,7 +4,6 @@ import { useDispatch } from 'react-redux';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { Button, Table, Modal, Form, Input, Select, message } from 'antd';
 import '../resources/items.css';
-import AdminLayout from '../components/AdminLayout';
 
 function ItemsPage() {
   const [itemsData, setItemsData] = useState([]);

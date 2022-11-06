@@ -1,14 +1,5 @@
-import {
-  Button,
-  Form,
-  Input,
-  InputNumber,
-  message,
-  Modal,
-  Select,
-  Table,
-} from 'antd';
-import React, { useEffect, useState } from 'react';
+import { Button, Form, Input, message, Modal, Table } from 'antd';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import {
@@ -19,18 +10,25 @@ import {
 import '../resources/cartPage.css';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import CashierLayout from '../components/CashierLayout';
 
 const CartPage = () => {
-  const navigate = useNavigate();
-  const { cartItems, cartViewItems } = useSelector(
-    (state) => state.rootReducer
-  );
-  const [subTotal, setSubTotal] = useState(0);
-  const [billChargeModal, setBillChargeModal] = useState(false);
+  const componentRef = useRef();
   const dispatch = useDispatch();
-  var grandTotal = subTotal + subTotal * 0.12;
+  const navigate = useNavigate();
+  const { cartItems } = useSelector((state) => state.rootReducer);
+  const [subTotalBeforeTax, setSubTotalBeforeTax] = useState(0);
+  const [billChargeModal, setBillChargeModal] = useState(false);
+  const [amountTendered, setAmountTendered] = useState(0);
+  const [subTotalAfterTax, setSubTotalAfterTax] = useState(0);
+  const [valueAddedTax, setValueAddedTax] = useState(0);
+  const [grandTotal, setGrandTotal] = useState(0);
+  const [printBillModalOpen, setPrintBillModalOpen] = useState(false);
+  // const latestBill = JSON.parse(localStorage.getItem('latestBill'));
+  const [latestBill, setLatestBill] = useState({});
 
+  let change = amountTendered - grandTotal;
+
+  //let change = amountTendered - subTotal;
   useEffect(() => {
     dispatch({ type: 'cartViewItemsClosed' });
   }, []);
@@ -49,7 +47,32 @@ const CartPage = () => {
       });
     }
   }
-
+  const cartColumns = [
+    {
+      title: 'Name',
+      dataIndex: 'name',
+    },
+    {
+      title: 'Price',
+      dataIndex: 'price',
+      render: (id, record) => <p id="bill-header-p">{record.price}</p>,
+    },
+    {
+      title: 'Quantity',
+      dataIndex: 'quantity',
+    },
+    {
+      title: 'Total',
+      dataIndex: '_id',
+      render: (id, record) => (
+        <div>
+          <p id="bill-header-p">
+            {(record.price * record.quantity).toFixed(2)}
+          </p>
+        </div>
+      ),
+    },
+  ];
   const columns = [
     {
       title: 'Product Name',
@@ -103,30 +126,64 @@ const CartPage = () => {
     const reqObject = {
       ...values,
       cartItems,
-      subTotal,
-      tax: Number((subTotal * 0.12).toFixed(2)),
-      totalAmount: Number((subTotal + Number(subTotal * 0.12)).toFixed(2)),
+      subTotalBeforeTax,
+      subTotalAfterTax,
+      tax: Number(valueAddedTax.toFixed(2)),
+      totalAmount: Number(grandTotal.toFixed(2)),
       userId: JSON.parse(localStorage.getItem('post-user')).userId,
     };
-    console.log(reqObject);
+    // console.log(reqObject);
     axios
       .post('/api/bills/charge-bill', reqObject)
       .then((res) => {
         message.success(res.data);
-        navigate('/bills');
+        // navigate('/bills');
+        getLatestBill();
       })
       .catch(() => {
         message.success('Something went wrong.');
       });
   };
+
+  const getLatestBill = () => {
+    dispatch({ type: 'showLoading' });
+    axios
+      .get('/api/bills/get-latest-bill')
+      .then((response) => {
+        dispatch({ type: 'hideLoading' });
+        setLatestBill(response.data);
+        // localStorage.setItem('latestBill', JSON.stringify(response.data));
+        message.success('latestBill updated!');
+        setPrintBillModalOpen(true);
+      })
+      .catch((error) => {
+        message.error('Error getting latest bill');
+        console.log(error);
+      });
+  };
+
   useEffect(() => {
     let temp = 0;
     cartItems.forEach((item) => {
       temp = temp + item.price * item.quantity;
 
-      setSubTotal(temp);
+      setSubTotalBeforeTax(temp);
     });
   }, [cartItems]);
+
+  function handleAmountTendered(e) {
+    const cash = Number(e.target.value);
+    setAmountTendered(cash);
+  }
+  function handleCheckOut() {
+    setBillChargeModal(true);
+    setSubTotalAfterTax(Number(subTotalBeforeTax * 0.88));
+    setValueAddedTax(Number(subTotalBeforeTax * 0.12));
+    setGrandTotal(Number(subTotalBeforeTax));
+  }
+  function handlePrint() {
+    message.success('printing');
+  }
   return (
     <div>
       <h3>Cart Items</h3>
@@ -134,13 +191,15 @@ const CartPage = () => {
       <hr />
       <div className="d-flex justify-content-end flex-column align-items-end">
         <div className="subtotal">
-          {cartItems.length !== 0 && <h3>SUBTOTAL: ₱ {subTotal.toFixed(2)}</h3>}
+          {cartItems.length !== 0 && (
+            <h3>SUBTOTAL: ₱ {subTotalBeforeTax.toFixed(2)}</h3>
+          )}
         </div>
         {cartItems.length !== 0 && (
           <Button
             type="primary"
             onClick={() => {
-              setBillChargeModal(true);
+              handleCheckOut();
             }}
           >
             Check out
@@ -152,8 +211,12 @@ const CartPage = () => {
       <Modal
         title="Charge Bill"
         open={billChargeModal}
-        onCancel={() => setBillChargeModal(false)}
+        onCancel={() => {
+          setBillChargeModal(false);
+          setAmountTendered(0);
+        }}
         footer={null}
+        destroyOnClose={true}
       >
         <Form layout="vertical" onFinish={onFinish}>
           <Form.Item label="Customer name" name="customerName">
@@ -165,7 +228,13 @@ const CartPage = () => {
           </Form.Item>
 
           <Form.Item label="Amount Tendered" name="amountTendered">
-            <Input placeholder="Enter Amount" type="number"></Input>
+            <Input
+              placeholder="Enter Amount"
+              type="number"
+              onChange={handleAmountTendered}
+              autoFocus={true}
+              value={amountTendered}
+            ></Input>
           </Form.Item>
           {/* <Form.Item label="Payment Mode" name="paymentMode">
             <Select placeholder="Payment mode">
@@ -175,24 +244,99 @@ const CartPage = () => {
           </Form.Item> */}
 
           <div>
-            <h5>Subtotal: ₱ {subTotal.toFixed(2)}</h5>
-            <h5>Vat 12%: ₱ {(subTotal * 0.12).toFixed(2)} </h5>
+            <h5>Amount Tendered: ₱ {amountTendered.toFixed(2)}</h5>
+            <h5>Subtotal: ₱ {subTotalAfterTax.toFixed(2)}</h5>
+            <h5>Vat 12%: ₱ {valueAddedTax.toFixed(2)} </h5>
             <hr />
             <h5>Total: ₱ {grandTotal.toFixed(2)}</h5>
+            <h5>Change: ₱ {change < 0 ? 0 : change}</h5>
           </div>
-
-          <div className="d-flex justify-content-end">
-            <Button
-              type="primary"
-              htmlType="submit"
-              onClick={() => setBillChargeModal(false)}
-            >
-              Generate Bill
-            </Button>
-          </div>
+          {amountTendered < grandTotal ? null : change > 1000 ? null : (
+            <div className="d-flex justify-content-end">
+              <Button
+                type="primary"
+                htmlType="submit"
+                onClick={() => {
+                  setBillChargeModal(false);
+                }}
+              >
+                Generate Bill
+              </Button>
+            </div>
+          )}
         </Form>
       </Modal>
       {/* <<<<CHARGE BILL MODAL ENDS HERE>>>>> */}
+
+      {/* <<<<<<<<<<<<<<<<<<<< PRINT BILL MODAL STARTS HERE >>>>>>>>>>>>>> */}
+      {printBillModalOpen && (
+        <Modal
+          title="Bill Details"
+          open={printBillModalOpen}
+          onCancel={() => setPrintBillModalOpen(false)}
+          footer={null}
+        >
+          <div className="bill-model" ref={componentRef}>
+            <div
+              className="d-flex justify-content-between"
+              id="bill-header-container"
+            >
+              <div>
+                {console.log(latestBill.customerName)}
+                <h3>Dinner Tea {latestBill.customerName}</h3>
+              </div>
+
+              <div>
+                <p id="bill-header-p">Dasmarinas, Cavite</p>
+                <p id="bill-header-p">Tel#: 09191234567</p>
+                <p id="bill-header-p">Tin#:123456789</p>
+              </div>
+            </div>
+            <div className="mt-2">
+              <p id="bill-body-customer-info">
+                <b>Customer name: </b>
+                {latestBill.customerName}
+              </p>
+              <p id="bill-body-customer-info">
+                <b>Tel#: </b>
+                {latestBill.customerPhoneNumber}
+              </p>
+              <p id="bill-body-customer-info">
+                <b>Date: </b>
+                {latestBill.createdAt}
+              </p>
+              <p>
+                <b>Cashier:</b> {latestBill.userId}
+              </p>
+            </div>
+            <Table
+              dataSource={latestBill}
+              columns={cartColumns}
+              rowKey="_id"
+              pagination={false}
+            />
+            <hr />
+            <div>
+              <p id="bill-body-customer-info">
+                <b>Subtotal: </b>₱ {latestBill.subTotalAfterTax}
+              </p>
+              <p id="bill-body-customer-info">
+                <b>12% VAT: </b>₱ {latestBill.tax}
+              </p>
+              <hr />
+              <p id="bill-body-customer-info">
+                <b>Total: </b>₱ {latestBill.totalAmount}
+              </p>
+            </div>
+            <hr />
+            <div className="text-center d-flex justify-content-center">
+              <p>Thank you,Come Again.</p>
+            </div>
+          </div>
+          <button onClick={handlePrint}>Print this out!</button>
+        </Modal>
+      )}
+      {/* <<<<<<<<<<<<<<<<<<<< PRINT BILL MODAL ENDS HERE >>>>>>>>>>>>>> */}
     </div>
   );
 };

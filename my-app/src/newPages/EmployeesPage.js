@@ -11,15 +11,13 @@ import {
   Table,
 } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import '../resources/login.css';
 import { useDispatch } from 'react-redux';
 import axios from 'axios';
 
-import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { DeleteOutlined } from '@ant-design/icons';
 import '../resources/Employees.css';
-import { faL } from '@fortawesome/free-solid-svg-icons';
-import AdminLayout from '../components/AdminLayout';
 
 const EmployeesPage = () => {
   const dispatch = useDispatch();

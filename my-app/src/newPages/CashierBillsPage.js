@@ -49,8 +49,8 @@ const CashierBillsPage = () => {
       dataIndex: 'customerPhoneNumber',
     },
     {
-      title: 'SubTotal',
-      dataIndex: 'subTotal',
+      title: 'Subtotal',
+      dataIndex: 'subTotalAfterTax',
     },
     { title: 'VAT 12%', dataIndex: 'tax' },
     { title: 'Total Amount', dataIndex: 'totalAmount' },
@@ -63,7 +63,7 @@ const CashierBillsPage = () => {
           onClick={() => {
             setSelectedBills(record);
             tester(record);
-            setBillModalOpen(true);
+            //setBillModalOpen(true);
           }}
         />
       ),
@@ -109,7 +109,7 @@ const CashierBillsPage = () => {
 
       <Table dataSource={billsData} columns={columns} rowKey="_id"></Table>
 
-      {billModalOpen && (
+      {/* {billModalOpen && (
         <Modal
           title="Bill Details"
           open={billModalOpen}
@@ -174,7 +174,7 @@ const CashierBillsPage = () => {
           </div>
           <button onClick={handlePrint}>Print this out!</button>
         </Modal>
-      )}
+      )} */}
     </div>
   );
 };

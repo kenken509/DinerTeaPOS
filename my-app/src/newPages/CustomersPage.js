@@ -1,12 +1,11 @@
 import react, { useEffect, useState, useRef } from 'react';
-import DefaultLayout from '../components/DefaultLayout';
+
 import axios from 'axios';
-import { Modal, Table } from 'antd';
+import { Table } from 'antd';
 import { useDispatch } from 'react-redux';
-import { EyeOutlined } from '@ant-design/icons';
+
 import '../resources/bills.css';
 import ReactToPrint, { useReactToPrint } from 'react-to-print';
-import AdminLayout from '../components/AdminLayout';
 
 const CustomersPage = () => {
   const [billsData, setBillsData] = useState([]);

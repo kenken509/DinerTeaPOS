@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import DefaultLayout from '../components/DefaultLayout';
+
 import axios from 'axios';
-import { Card, Col, Divider, Row, Table } from 'antd';
+import { Col, Row } from 'antd';
 import ItemCard from '../components/ItemCard';
 import { useDispatch, useSelector } from 'react-redux';
 import '../resources/HomePage.css';
