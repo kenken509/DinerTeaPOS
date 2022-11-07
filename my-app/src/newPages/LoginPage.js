@@ -55,11 +55,11 @@ const LoginPage = () => {
       <Row>
         <Col lg={4} xs={12}>
           <Form layout="vertical" onFinish={onFinish}>
-            <h2>
-              Diner Tea <b>POS</b>
-            </h2>
+            <h2 className="d-flex justify-content-center">Diner Tea</h2>
             <hr />
-            <h5>Login </h5>
+            <div className="d-flex justify-content-center">
+              <h5>LOGIN</h5>
+            </div>
 
             <Form.Item label="Username" name="userId">
               <Input placeholder="Username"></Input>
@@ -68,10 +68,7 @@ const LoginPage = () => {
               <Input.Password placeholder="Password"></Input.Password>
             </Form.Item>
 
-            <div className="d-flex justify-content-between">
-              <Link to="/register" className="login-link">
-                Not yet registered? Click here
-              </Link>
+            <div className="d-flex justify-content-end">
               <Button type="primary" htmlType="submit">
                 Login
               </Button>

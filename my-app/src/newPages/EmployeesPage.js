@@ -29,6 +29,7 @@ const EmployeesPage = () => {
   const [form] = Form.useForm();
 
   //********************************************************************** */
+
   const onFinish = (values) => {
     dispatch({ type: 'showLoading' });
 
@@ -49,9 +50,12 @@ const EmployeesPage = () => {
         });
       navigate('/employees-page/cashier');
     } else if (addEditEmployeeModal) {
-      message.success('addEditEmployeeModal activated!');
-      if (editingEmployee === null) {
-        console.log(values);
+      //message.success('addEditEmployeeModal activated!');
+      const userExist = usersData.find((data) => data.userId === values.userId);
+
+      if (userExist) {
+        message.error('User exist! try another one.');
+      } else {
         axios
           .post('/api/users/add-employee', { ...values, verified: true })
           .then((res) => {
@@ -67,26 +71,6 @@ const EmployeesPage = () => {
             dispatch({ type: 'hideLoading' });
             message.error('Something 1111111 went wrong.');
           });
-      } else {
-        // reserve code for editing employee starts here>>>>>
-        axios
-          .post('/api/users/edit-employee', {
-            ...values,
-            userID: editingEmployee._id,
-          })
-          .then((response) => {
-            message.success(response.data);
-            dispatch({ type: 'hideLoading' });
-            setEditingEmployee(null);
-            setAddEditEmployeeModal(false);
-
-            getAllUsers();
-          })
-          .catch((error) => {
-            dispatch({ type: 'hideLoading' });
-            console.log(error);
-          });
-        // reserve code for editing remployee ends here >>>>>
       }
     }
   };
@@ -174,6 +158,7 @@ const EmployeesPage = () => {
   function tester() {
     message.success('tester activated');
   }
+
   return (
     <div>
       <div className="d-flex justify-content-between">
@@ -294,10 +279,16 @@ const EmployeesPage = () => {
                 <Form.Item
                   label="Password"
                   name="password"
+                  hasFeedback
                   rules={[
                     {
                       required: true,
-                      message: 'Please input your password!',
+                      message: 'Please input your password',
+                    },
+                    {
+                      pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/,
+                      message:
+                        'Minimum eight characters, at least one uppercase letter, one lowercase letter and one number',
                     },
                   ]}
                 >
@@ -306,11 +297,23 @@ const EmployeesPage = () => {
                 <Form.Item
                   label="Confirm Password"
                   name="confirmPassword"
+                  dependencies={['password']}
+                  hasFeedback
                   rules={[
                     {
                       required: true,
-                      message: 'Please input your confirm your password!',
+                      message: 'Please confirm your password!',
                     },
+                    ({ getFieldValue }) => ({
+                      validator(rule, value) {
+                        if (!value || getFieldValue('password') === value) {
+                          return Promise.resolve();
+                        }
+                        return Promise.reject(
+                          'The two passwords that you entered do not match!'
+                        );
+                      },
+                    }),
                   ]}
                 >
                   <Input.Password placeholder="Confirm password"></Input.Password>

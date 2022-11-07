@@ -10,6 +10,7 @@ import {
 import '../resources/cartPage.css';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useReactToPrint } from 'react-to-print';
 
 const CartPage = () => {
   const componentRef = useRef();
@@ -24,7 +25,7 @@ const CartPage = () => {
   const [grandTotal, setGrandTotal] = useState(0);
   const [printBillModalOpen, setPrintBillModalOpen] = useState(false);
   // const latestBill = JSON.parse(localStorage.getItem('latestBill'));
-  const [latestBill, setLatestBill] = useState({});
+  const [latestBill, setLatestBill] = useState(null);
 
   let change = amountTendered - grandTotal;
 
@@ -153,7 +154,7 @@ const CartPage = () => {
         dispatch({ type: 'hideLoading' });
         setLatestBill(response.data);
         // localStorage.setItem('latestBill', JSON.stringify(response.data));
-        message.success('latestBill updated!');
+        //message.success('latestBill updated!');
         setPrintBillModalOpen(true);
       })
       .catch((error) => {
@@ -181,9 +182,10 @@ const CartPage = () => {
     setValueAddedTax(Number(subTotalBeforeTax * 0.12));
     setGrandTotal(Number(subTotalBeforeTax));
   }
-  function handlePrint() {
-    message.success('printing');
-  }
+
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current,
+  });
   return (
     <div>
       <h3>Cart Items</h3>
@@ -276,64 +278,74 @@ const CartPage = () => {
           onCancel={() => setPrintBillModalOpen(false)}
           footer={null}
         >
-          <div className="bill-model" ref={componentRef}>
-            <div
-              className="d-flex justify-content-between"
-              id="bill-header-container"
-            >
+          {latestBill.map((bill) => {
+            return (
               <div>
-                {console.log(latestBill.customerName)}
-                <h3>Dinner Tea {latestBill.customerName}</h3>
-              </div>
+                <div className="bill-model" ref={componentRef}>
+                  <div
+                    className="d-flex justify-content-between"
+                    id="bill-header-container"
+                  >
+                    <div>
+                      <h3>Dinner Tea</h3>
+                    </div>
 
-              <div>
-                <p id="bill-header-p">Dasmarinas, Cavite</p>
-                <p id="bill-header-p">Tel#: 09191234567</p>
-                <p id="bill-header-p">Tin#:123456789</p>
+                    <div>
+                      <p id="bill-header-p">Dasmarinas, Cavite</p>
+                      <p id="bill-header-p">Tel#: 09191234567</p>
+                      <p id="bill-header-p">Tin#:123456789</p>
+                    </div>
+                  </div>
+                  <div className="mt-2">
+                    <p id="bill-body-customer-info">
+                      <b>Customer name: </b>
+                      {bill.customerName}
+                    </p>
+                    <p id="bill-body-customer-info">
+                      <b>Tel#: </b>
+                      {bill.customerPhoneNumber}
+                    </p>
+                    <p id="bill-body-customer-info">
+                      <b>Date: </b>
+                      {bill.createdAt.toString().substring(0, 10)}
+                    </p>
+                    <p id="bill-body-customer-info">
+                      <b>Cashier:</b> {bill.userId}
+                    </p>
+                    <p id="bill-body-customer-info">
+                      <b>OR ID#:</b> {bill._id}
+                    </p>
+                  </div>
+                  <Table
+                    dataSource={bill.cartItems}
+                    columns={cartColumns}
+                    rowKey="_id"
+                    pagination={false}
+                  />
+                  <hr />
+                  <div>
+                    <p id="bill-body-customer-info">
+                      <b>Subtotal: </b>₱ {bill.subTotalAfterTax.toFixed(2)}
+                    </p>
+                    <p id="bill-body-customer-info">
+                      <b>12% VAT: </b>₱ {bill.tax.toFixed(2)}
+                    </p>
+                    <hr />
+                    <p id="bill-body-customer-info">
+                      <b>Total: </b>₱ {bill.totalAmount.toFixed(2)}
+                    </p>
+                  </div>
+                  <hr />
+                  <div className="text-center d-flex justify-content-center ">
+                    <p>Thank you,Come Again.</p>
+                  </div>
+                </div>
+                <button onClick={handlePrint} autoFocus>
+                  Print this out!
+                </button>
               </div>
-            </div>
-            <div className="mt-2">
-              <p id="bill-body-customer-info">
-                <b>Customer name: </b>
-                {latestBill.customerName}
-              </p>
-              <p id="bill-body-customer-info">
-                <b>Tel#: </b>
-                {latestBill.customerPhoneNumber}
-              </p>
-              <p id="bill-body-customer-info">
-                <b>Date: </b>
-                {latestBill.createdAt}
-              </p>
-              <p>
-                <b>Cashier:</b> {latestBill.userId}
-              </p>
-            </div>
-            <Table
-              dataSource={latestBill}
-              columns={cartColumns}
-              rowKey="_id"
-              pagination={false}
-            />
-            <hr />
-            <div>
-              <p id="bill-body-customer-info">
-                <b>Subtotal: </b>₱ {latestBill.subTotalAfterTax}
-              </p>
-              <p id="bill-body-customer-info">
-                <b>12% VAT: </b>₱ {latestBill.tax}
-              </p>
-              <hr />
-              <p id="bill-body-customer-info">
-                <b>Total: </b>₱ {latestBill.totalAmount}
-              </p>
-            </div>
-            <hr />
-            <div className="text-center d-flex justify-content-center">
-              <p>Thank you,Come Again.</p>
-            </div>
-          </div>
-          <button onClick={handlePrint}>Print this out!</button>
+            );
+          })}
         </Modal>
       )}
       {/* <<<<<<<<<<<<<<<<<<<< PRINT BILL MODAL ENDS HERE >>>>>>>>>>>>>> */}
